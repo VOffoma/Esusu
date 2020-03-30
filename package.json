@@ -1,0 +1,35 @@
+{
+  "name": "esusu",
+  "version": "1.0.0",
+  "description": "A simple platform that helps a group of people to save a fixed amount every week and then one of the members collects the money at the end of every month.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "devStart": "nodemon --exec babel-node src/start.js",
+    "build": "babel src --out-dir dist",
+    "serve": "node dist/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VOffoma/Esusu.git"
+  },
+  "author": "Victoria Offoma",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VOffoma/Esusu/issues"
+  },
+  "homepage": "https://github.com/VOffoma/Esusu#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/node": "^7.8.7",
+    "@babel/preset-env": "^7.9.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.2",
+    "nodemon": "^2.0.2"
+  }
+}
