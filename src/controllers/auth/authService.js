@@ -1,3 +1,4 @@
+import createError from 'http-errors';
 import registerWithAWSCognito from './awsCognito';
 
 async function register(signupdetails) {
@@ -5,7 +6,7 @@ async function register(signupdetails) {
     const user = await registerWithAWSCognito(signupdetails);
     return user;
   } catch (error) {
-    console.log(error);
+    throw createError(400, error);
   }
 }
 
