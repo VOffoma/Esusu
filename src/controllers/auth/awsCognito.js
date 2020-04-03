@@ -15,12 +15,18 @@ const pool_region = config.get('cognito:region');
 
 const userPool = new CognitoUserPool(poolData);
 
-export default function registerWithAWSCognito(signupDetails) {
+function createCognitoUserAttributeList(email, name) {
   const attributeList = [];
-  attributeList.push(new CognitoUserAttribute({ Name: 'email', Value: signupDetails.email }));
-  attributeList.push(new CognitoUserAttribute({ Name: 'name', Value: signupDetails.name }));
+  attributeList.push(new CognitoUserAttribute({ Name: 'email', Value: email }));
+  attributeList.push(new CognitoUserAttribute({ Name: 'name', Value: name }));
+  return attributeList;
+}
+
+export default function registerWithAWSCognito(signupDetails) {
+  const { name, email, password } = signupDetails;
+  const attributeList = createCognitoUserAttributeList(email, name);
   return new Promise((resolve, reject) => {
-    userPool.signUp(signupDetails.email, signupDetails.password, attributeList, null,
+    userPool.signUp(email, password, attributeList, null,
       (err, result) => {
         if (err) {
           reject(err);
