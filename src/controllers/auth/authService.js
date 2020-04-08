@@ -19,8 +19,9 @@ const poolData = {
   UserPoolId: config.get('cognito:userpoolid'),
   ClientId: config.get('cognito:clientid'),
 };
-const poolRegion = config.get('cognito:region');
+
 const userPool = new CognitoUserPool(poolData);
+
 
 const createCognitoUserAttributeList = (email, name) => {
   const attributeList = [];
@@ -53,18 +54,24 @@ const getTokens = (authenticationInfo) => {
   };
 };
 
+const getCognitoUser = (username) => {
+  const userData = {
+    Username: username,
+    Pool: userPool,
+  };
+
+  const cognitoUser = new CognitoUser(userData);
+  return cognitoUser;
+};
+
 const login = (loginCredentials) => {
   const authenticationDetails = new AuthenticationDetails({
     Username: loginCredentials.email,
     Password: loginCredentials.password,
   });
 
-  const userData = {
-    Username: loginCredentials.email,
-    Pool: userPool,
-  };
+  const cognitoUser = getCognitoUser(loginCredentials.email);
 
-  const cognitoUser = new CognitoUser(userData);
   return new Promise((resolve, reject) => {
     cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: (result) => resolve(getTokens(result)),
@@ -75,6 +82,7 @@ const login = (loginCredentials) => {
 
 
 const getKeys = async () => {
+  const poolRegion = config.get('cognito:region');
   const url = `https://cognito-idp.${poolRegion}.amazonaws.com/${poolData.UserPoolId}/.well-known/jwks.json`;
   const response = await axios.get(url);
   const { keys } = response.data;
