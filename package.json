@@ -4,6 +4,7 @@
   "description": "A simple platform that helps a group of people to save a fixed amount every week and then one of the members collects the money at the end of every month.",
   "main": "index.js",
   "scripts": {
+    "scan": "auditjs ossi",
     "test": "echo \"Error: no test specified\" && exit 1",
     "devStart": "nodemon --exec babel-node src/start.js",
     "build": "babel src --out-dir dist",
@@ -36,6 +37,7 @@
     "@babel/core": "^7.9.0",
     "@babel/node": "^7.8.7",
     "@babel/preset-env": "^7.9.0",
+    "auditjs": "^4.0.14",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.20.2",
