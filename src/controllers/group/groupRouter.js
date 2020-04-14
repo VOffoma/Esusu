@@ -7,9 +7,10 @@ import authService from '../auth/authService';
 
 const groupRouter = Router();
 
-groupRouter.get('/', (req, res) => {
-  res.status(200).send({ message: 'this route work' });
-});
+groupRouter.get('/', asyncHandler(async (req, res) => {
+  const groups = await groupService.getGroups();
+  res.status(200).send(groups);
+}));
 
 groupRouter.use(asyncHandler(async (req, res, next) => {
   const token = req.headers.authorization;

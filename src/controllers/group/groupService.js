@@ -6,4 +6,9 @@ const createGroup = async (groupDetails) => {
   return group;
 };
 
-export default { createGroup };
+const getGroups = async () => {
+  const groups = await Group.findSearchableGroups();
+  return groups;
+};
+
+export default { createGroup, getGroups };

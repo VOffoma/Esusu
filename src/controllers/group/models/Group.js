@@ -32,4 +32,8 @@ const groupSchema = new mongoose.Schema({
   },
 });
 
+groupSchema.statics.findSearchableGroups = async function () {
+  const searchableGroups = await this.find({ isSearchable: true });
+  return searchableGroups;
+};
 export default mongoose.model('Group', groupSchema);
