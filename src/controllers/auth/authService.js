@@ -105,7 +105,7 @@ const createPEM = (keys) => {
   return pems;
 };
 
-const verifyToken = (token, pems) => {
+const validateToken = (token, pems) => {
   const decodedJwt = jwt.decode(token, { complete: true });
   if (!decodedJwt) {
     throw createError(400, 'Not a valid JWT token!');
@@ -125,11 +125,11 @@ const verifyToken = (token, pems) => {
 };
 
 
-const validateToken = async (token) => {
+const verifyLogin = async (token) => {
   const keys = await getKeys();
   const pems = createPEM(keys);
-  const payload = verifyToken(token, pems);
+  const payload = validateToken(token, pems);
   return payload;
 };
 
-export default { register, login, validateToken };
+export default { register, login, verifyLogin };
