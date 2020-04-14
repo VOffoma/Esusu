@@ -26,6 +26,10 @@ const groupSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  admin: {
+    type: Object,
+    required: 'Please enter admin id',
+  },
 });
 
 export default mongoose.model('Group', groupSchema);
