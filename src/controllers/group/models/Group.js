@@ -15,7 +15,7 @@ const groupSchema = new mongoose.Schema({
     type: Number,
     required: 'Please enter the maximum number of group members',
   },
-  isSearchable: {
+  isSearchable: { // change this to public or private
     type: Boolean,
     default: true,
   },
@@ -31,6 +31,7 @@ const groupSchema = new mongoose.Schema({
     type: Object,
     required: 'Please enter admin id',
   },
+  members: [{}],
 });
 
 groupSchema.statics.findSearchableGroups = async function () {

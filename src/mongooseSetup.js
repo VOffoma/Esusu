@@ -2,7 +2,14 @@
 import mongoose from 'mongoose';
 
 const connectDb = (databaseURL) => {
-  mongoose.connect(databaseURL, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
+  const options = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+  };
+
+  mongoose.connect(databaseURL, options)
     .then(() => {
       console.log('connection successfull');
     })

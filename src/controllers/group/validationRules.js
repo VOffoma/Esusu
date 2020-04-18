@@ -10,4 +10,11 @@ const groupCreation = {
   }),
 };
 
-export default { groupCreation };
+const groupId = {
+  params: Joi.object({
+    groupId: Joi.string().trim().required(),
+  }),
+};
+
+// change groupcreation to a better name
+export default { groupCreation, groupId };
