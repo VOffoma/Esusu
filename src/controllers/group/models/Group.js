@@ -15,7 +15,7 @@ const groupSchema = new mongoose.Schema({
     type: Number,
     required: 'Please enter the maximum number of group members',
   },
-  isSearchable: { // change this to public or private
+  public: {
     type: Boolean,
     default: true,
   },
@@ -34,8 +34,8 @@ const groupSchema = new mongoose.Schema({
   members: [{}],
 });
 
-groupSchema.statics.findSearchableGroups = async function () {
-  const searchableGroups = await this.find({ isSearchable: true });
+groupSchema.statics.findPublicGroups = async function () {
+  const searchableGroups = await this.find({ public: true });
   return searchableGroups;
 };
 export default mongoose.model('Group', groupSchema);
