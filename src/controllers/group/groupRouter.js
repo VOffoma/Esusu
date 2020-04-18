@@ -33,4 +33,13 @@ groupRouter.post('/',
     return res.status(201).send(newGroup);
   }));
 
+groupRouter.post('/:groupId/join',
+  validate(validationRules.groupId, { statusCode: 422, keyByField: true }, {}),
+  asyncHandler(async (req, res) => {
+    const { groupId } = req.params;
+    const { user } = req;
+    const groupInfo = await groupService.joinGroup({ groupId, user });
+    return res.status(201).send(groupInfo);
+  }));
+
 export default groupRouter;
