@@ -2,8 +2,11 @@ import createError from 'http-errors';
 import Group from './models/Group';
 
 const createGroup = async (groupDetails) => {
-  const group = await (new Group(groupDetails)).save();
-  return group;
+  const { group, user } = groupDetails;
+  group.admin = user;
+  group.members = [user];
+  const newGroup = await (new Group(group)).save();
+  return newGroup;
 };
 
 const getGroups = async () => {
