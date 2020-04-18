@@ -27,9 +27,9 @@ groupRouter.use(asyncHandler(async (req, res, next) => {
 groupRouter.post('/',
   validate(validationRules.groupCreation, { statusCode: 422, keyByField: true }, {}),
   asyncHandler(async (req, res) => {
-    const groupDetails = req.body;
-    groupDetails.admin = req.user;
-    const newGroup = await groupService.createGroup(groupDetails);
+    const group = req.body;
+    const { user } = req;
+    const newGroup = await groupService.createGroup({ group, user });
     return res.status(201).send(newGroup);
   }));
 
@@ -39,7 +39,7 @@ groupRouter.post('/:groupId/join',
     const { groupId } = req.params;
     const { user } = req;
     const groupInfo = await groupService.addUserToGroup({ groupId, user });
-    return res.status(201).send(groupInfo);
+    return res.status(200).send(groupInfo);
   }));
 
 export default groupRouter;
