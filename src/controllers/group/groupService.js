@@ -10,17 +10,16 @@ const createGroup = async (groupDetails) => {
 };
 
 const getGroups = async () => {
-  const groups = await Group.findSearchableGroups();
+  const groups = await Group.findPublicGroups();
   return groups;
 };
 
 
 const addUserToGroup = async (joinRequest) => {
-  // implement check to see if the group is a private group or not
   try {
     const { groupId, user } = joinRequest;
 
-    const updatedGroup = await Group.findOneAndUpdate({ _id: groupId, 'members.email': { $ne: user.email } }, { $push: { members: user } });
+    const updatedGroup = await Group.findOneAndUpdate({ _id: groupId, public: true, 'members.email': { $ne: user.email } }, { $push: { members: user } });
 
     if (updatedGroup) {
       const { name, description, savingsAmount } = updatedGroup;
