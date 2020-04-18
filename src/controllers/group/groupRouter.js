@@ -38,7 +38,7 @@ groupRouter.post('/:groupId/join',
   asyncHandler(async (req, res) => {
     const { groupId } = req.params;
     const { user } = req;
-    const groupInfo = await groupService.joinGroup({ groupId, user });
+    const groupInfo = await groupService.addUserToGroup({ groupId, user });
     return res.status(201).send(groupInfo);
   }));
 

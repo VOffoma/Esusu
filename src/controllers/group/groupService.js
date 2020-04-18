@@ -12,7 +12,7 @@ const getGroups = async () => {
 };
 
 
-const joinGroup = async (joinRequest) => {
+const addUserToGroup = async (joinRequest) => {
   // implement check to see if the group is a private group or not
   try {
     const { groupId, user } = joinRequest;
@@ -23,4 +23,4 @@ const joinGroup = async (joinRequest) => {
   }
 };
 
-export default { createGroup, getGroups, joinGroup };
+export default { createGroup, getGroups, addUserToGroup };
