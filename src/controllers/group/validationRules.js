@@ -16,5 +16,11 @@ const groupId = {
   }),
 };
 
+const searchTerm = {
+  query: Joi.object({
+    searchTerm: Joi.string().trim().required(),
+  }),
+};
+
 // change groupcreation to a better name
-export default { groupCreation, groupId };
+export default { groupCreation, groupId, searchTerm };

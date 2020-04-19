@@ -37,4 +37,24 @@ const addUserToGroup = async (joinRequest) => {
   }
 };
 
-export default { createGroup, getGroups, addUserToGroup };
+const searchGroups = async (searchString) => {
+  const searchResult = await Group.find({
+    public: true,
+    $text: { $search: searchString },
+  }, {
+    score: { $meta: 'textScore' },
+  })
+    .select({
+      _id: 0, name: 1, description: 1, savingsAmount: 1,
+    })
+    .sort({
+      score: { $meta: 'textScore' },
+    })
+    .limit(5);
+
+  return (searchResult.length ? searchResult : 'Sorry, we could not find what you were looking for');
+
+}
+export default {
+  createGroup, getGroups, addUserToGroup, searchGroups,
+};

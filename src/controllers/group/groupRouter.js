@@ -12,6 +12,13 @@ groupRouter.get('/', asyncHandler(async (req, res) => {
   res.status(200).send(groups);
 }));
 
+groupRouter.get('/search',
+  validate(validationRules.searchTerm, { statusCode: 422, keyByField: true }, {}),
+  asyncHandler(async (req, res) => {
+    const searchResult = await groupService.searchGroups(req.query.searchTerm);
+    res.status(200).send(searchResult);
+  }));
+
 groupRouter.use(asyncHandler(async (req, res, next) => {
   const token = req.headers.authorization;
   const payload = await authService.verifyLogin(token);
