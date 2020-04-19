@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 
+
 const groupSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -32,6 +33,11 @@ const groupSchema = new mongoose.Schema({
     required: 'Please enter admin id',
   },
   members: [{}],
+});
+
+groupSchema.index({
+  name: 'text',
+  description: 'text',
 });
 
 groupSchema.statics.findPublicGroups = async function () {
