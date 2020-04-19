@@ -6,7 +6,7 @@ const groupCreation = {
     description: Joi.string().trim(),
     maxCapacity: Joi.number().required().min(2).max(50),
     savingsAmount: Joi.number().required(),
-    isSearchable: Joi.boolean().optional(),
+    public: Joi.boolean().optional(),
   }),
 };
 
