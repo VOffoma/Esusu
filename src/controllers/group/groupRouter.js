@@ -40,6 +40,16 @@ groupRouter.post('/',
     return res.status(201).send(newGroup);
   }));
 
+groupRouter.post('/:groupId/invite',
+  validate(validationRules.groupInvitation, { statusCode: 422, keyByField: true }, {}),
+  asyncHandler(async (req, res) => {
+    // validate the emails being received
+    const { invitees } = req.body;
+    const { groupId } = req.params;
+    const message = await groupService.createInvitations(invitees, groupId);
+    res.status(200).send(message);
+  }));
+
 groupRouter.post('/:groupId/join',
   validate(validationRules.groupId, { statusCode: 422, keyByField: true }, {}),
   asyncHandler(async (req, res) => {

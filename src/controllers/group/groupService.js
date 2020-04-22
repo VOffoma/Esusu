@@ -1,5 +1,7 @@
 import createError from 'http-errors';
+import { v4 as uuidv4 } from 'uuid';
 import Group from './models/Group';
+import Invitation from './models/Invitation';
 
 const createGroup = async (groupDetails) => {
   const { group, user } = groupDetails;
@@ -53,8 +55,24 @@ const searchGroups = async (searchString) => {
     .limit(5);
 
   return (searchResult.length ? searchResult : 'Sorry, we could not find what you were looking for');
+};
 
-}
+const createInvitations = async (invitees, groupId) => {
+  try {
+    const invites = invitees.map((invitee) => ({
+      receiver: invitee,
+      invitationToken: uuidv4(),
+      invitationTokenExpires: Date.now() + (7 * 24 * 60 * 60 * 1000),
+      groupId,
+    }));
+
+    await Invitation.insertMany(invites);
+    return 'Invitations have been created successfully and will be sent out in a bit.';
+  } catch (error) {
+    throw createError(400, error);
+  }
+};
+
 export default {
-  createGroup, getGroups, addUserToGroup, searchGroups,
+  createGroup, getGroups, addUserToGroup, searchGroups, createInvitations,
 };
