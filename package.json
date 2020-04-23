@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/VOffoma/Esusu#readme",
   "dependencies": {
+    "agenda": "^3.1.0",
     "amazon-cognito-identity-js": "^3.2.7",
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
@@ -32,7 +33,9 @@
     "jwk-to-pem": "^2.0.3",
     "mongoose": "^5.9.7",
     "nconf": "^0.10.0",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "nodemailer": "^6.4.6",
+    "uuid": "^7.0.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",

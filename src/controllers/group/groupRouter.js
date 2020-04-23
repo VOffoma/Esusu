@@ -4,11 +4,13 @@ import { validate } from 'express-validation';
 import groupService from './groupService';
 import validationRules from './validationRules';
 import authService from '../auth/authService';
+import agenda from '../../jobs/agenda';
 
 const groupRouter = Router();
 
 groupRouter.get('/', asyncHandler(async (req, res) => {
   const groups = await groupService.getGroups();
+  agenda.schedule('in 1 minute', 'test');
   res.status(200).send(groups);
 }));
 
@@ -38,6 +40,16 @@ groupRouter.post('/',
     const { user } = req;
     const newGroup = await groupService.createGroup({ group, user });
     return res.status(201).send(newGroup);
+  }));
+
+groupRouter.post('/:groupId/invite',
+  validate(validationRules.groupInvitation, { statusCode: 422, keyByField: true }, {}),
+  asyncHandler(async (req, res) => {
+    const { invitees } = req.body;
+    const { groupId } = req.params;
+    const message = await groupService.createInvitations(invitees, groupId);
+    agenda.schedule('in 2 minutes', 'send-invitation-mails', { groupId });
+    res.status(200).send(message);
   }));
 
 groupRouter.post('/:groupId/join',

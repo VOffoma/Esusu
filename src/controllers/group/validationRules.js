@@ -22,5 +22,15 @@ const searchTerm = {
   }),
 };
 
+const groupInvitation = {
+  params: Joi.object({
+    groupId: Joi.string().trim().required(),
+  }),
+  body: Joi.object({
+    invitees: Joi.array().min(1).required().items(Joi.string().email({ tlds: { allow: false } })),
+  }),
+};
 // change groupcreation to a better name
-export default { groupCreation, groupId, searchTerm };
+export default {
+  groupCreation, groupId, searchTerm, groupInvitation,
+};
