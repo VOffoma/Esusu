@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/VOffoma/Esusu#readme",
   "dependencies": {
+    "agenda": "^3.1.0",
     "amazon-cognito-identity-js": "^3.2.7",
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
