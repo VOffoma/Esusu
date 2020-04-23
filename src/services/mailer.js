@@ -12,14 +12,7 @@ const transportOptions = {
 
 const transporter = nodemailer.createTransport(transportOptions);
 
-async function sendEmail(recipient, title, message) {
-  const mailOptions = {
-    from: '',
-    to: recipient,
-    subject: title,
-    text: message,
-  };
-
+async function sendEmail(mailOptions) {
   await transporter.sendMail(mailOptions);
 }
 
