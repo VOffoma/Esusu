@@ -57,10 +57,30 @@ const searchGroups = async (searchString) => {
   return (searchResult.length ? searchResult : 'Sorry, we could not find what you were looking for');
 };
 
+const removePriorMembers = async (invitees, groupId) => {
+  const queryResult = await Group.findOne({ _id: groupId },
+    { members: { $elemMatch: { email: { $in: invitees } } } })
+    .select({ _id: 0, members: 1 });
+
+  const priorMembers = queryResult.members;
+
+  if (priorMembers.length !== 0) {
+    const prospectiveMembers = invitees.filter((invitee) => {
+      const found = priorMembers.find((member) => member.email === invitee);
+      if (!found) return invitee;
+    });
+
+    return prospectiveMembers;
+  }
+
+  return invitees;
+};
+
 const createInvitations = async (invitees, groupId) => {
   try {
-    const invites = invitees.map((invitee) => ({
-      receiver: invitee,
+    const prospectiveMembers = await removePriorMembers(invitees, groupId);
+    const invites = prospectiveMembers.map((email) => ({
+      receiver: email,
       invitationToken: uuidv4(),
       invitationTokenExpires: Date.now() + (7 * 24 * 60 * 60 * 1000),
       groupId,
@@ -72,6 +92,7 @@ const createInvitations = async (invitees, groupId) => {
     throw createError(400, error);
   }
 };
+
 
 export default {
   createGroup, getGroups, addUserToGroup, searchGroups, createInvitations,
