@@ -15,8 +15,7 @@ const generateMailOptions = (invitation) => {
   const sender = config.get('mail:sender');
   const subject = 'Esusu Invitation';
   const hostURL = config.get('hostURL');
-  const link = `${hostURL}/join/${invitation.invitationToken}`;
-  console.log(link);
+  const link = `${hostURL}/group/join/${invitation.invitationToken}`;
   return {
     from: sender,
     to: invitation.receiver,

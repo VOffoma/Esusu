@@ -10,15 +10,13 @@ const invitationSchema = new mongoose.Schema({
   invitationToken: {
     type: String,
     trim: true,
-    required: 'Please provide invitation token',
   },
   invitationTokenExpires: {
     type: Date,
-    required: 'Please provide token expiry date',
   },
   status: {
     type: String,
-    enum: ['Pending', 'Sent'], // remember to add more status options
+    enum: ['Pending', 'Accepted', 'Expired'], // remember to add more status options
     default: 'Pending',
   },
   groupId: { type: mongoose.Schema.Types.ObjectId, ref: 'Group' },

@@ -6,11 +6,11 @@ import validationRules from './validationRules';
 import authService from '../auth/authService';
 import agenda from '../../jobs/agenda';
 
+
 const groupRouter = Router();
 
 groupRouter.get('/', asyncHandler(async (req, res) => {
   const groups = await groupService.getGroups();
-  agenda.schedule('in 1 minute', 'test');
   res.status(200).send(groups);
 }));
 
@@ -21,11 +21,45 @@ groupRouter.get('/search',
     res.status(200).send(searchResult);
   }));
 
+groupRouter.post('/signup/:token',
+  validate(validationRules.invitationToken, { statusCode: 422, keyByField: true }, {}),
+  asyncHandler(async (req, res, next) => {
+    const { token } = req.params;
+    const validInvitation = await groupService.checkInvitationValidity(token);
+    req.invitation = validInvitation;
+    next();
+  }),
+  asyncHandler(async (req, res, next) => {
+    const signUpInfo = req.body;
+    await authService.register(signUpInfo);
+    next();
+  }),
+  asyncHandler(async (req, res) => {
+    const { invitation } = req;
+    const groupInfo = await groupService.addUserToPrivateGroup(invitation);
+    return res.status(201).send(`You have been successfully registered and added to group ${groupInfo.name}`);
+  }));
+
+
+groupRouter.post('/join/:token',
+  validate(validationRules.invitationToken, { statusCode: 422, keyByField: true }, {}),
+  asyncHandler(async (req, res, next) => {
+    const { token } = req.params;
+    const validInvitation = await groupService.checkInvitationValidity(token);
+    req.invitation = validInvitation;
+    next();
+  }),
+  asyncHandler(async (req, res) => {
+    const { invitation } = req;
+    const groupInfo = await groupService.addUserToPrivateGroup(invitation);
+    return res.status(200).send(groupInfo);
+  }));
+
+
 groupRouter.use(asyncHandler(async (req, res, next) => {
   const token = req.headers.authorization;
   const payload = await authService.verifyLogin(token);
   req.user = {
-    name: payload.name,
     email: payload.email,
     'cognito:username': payload['cognito:username'],
   };
@@ -42,6 +76,7 @@ groupRouter.post('/',
     return res.status(201).send(newGroup);
   }));
 
+
 groupRouter.post('/:groupId/invite',
   validate(validationRules.groupInvitation, { statusCode: 422, keyByField: true }, {}),
   asyncHandler(async (req, res) => {
@@ -52,12 +87,13 @@ groupRouter.post('/:groupId/invite',
     res.status(200).send(message);
   }));
 
+
 groupRouter.post('/:groupId/join',
   validate(validationRules.groupId, { statusCode: 422, keyByField: true }, {}),
   asyncHandler(async (req, res) => {
     const { groupId } = req.params;
     const { user } = req;
-    const groupInfo = await groupService.addUserToGroup({ groupId, user });
+    const groupInfo = await groupService.addUserToGroup({ groupId, newGroupUser: user });
     return res.status(200).send(groupInfo);
   }));
 

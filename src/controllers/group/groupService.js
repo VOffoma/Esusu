@@ -1,7 +1,9 @@
 import createError from 'http-errors';
 import { v4 as uuidv4 } from 'uuid';
+import config from '../../config/index';
 import Group from './models/Group';
 import Invitation from './models/Invitation';
+import { getUsers } from '../../services/aws';
 
 const createGroup = async (groupDetails) => {
   const { group, user } = groupDetails;
@@ -17,11 +19,37 @@ const getGroups = async () => {
 };
 
 
+const checkInvitationValidity = async (token) => {
+  const invitation = await Invitation.findOne({
+    invitationToken: token,
+    invitationTokenExpires: { $gt: Date.now() },
+  });
+  if (!invitation) {
+    throw createError(401, 'This invitation either does not exist or has expired');
+  }
+  return invitation;
+};
+
+
+const checkIfReceiverIsRegistered = async (email) => {
+  const data = await getUsers(email);
+  if (data.Users.length === 0) {
+    return null;
+  }
+
+  const registeredUser = {
+    email: data.Users[0].Attributes[0].Value,
+    'cognito:username': data.Users[0].Username,
+  };
+  return registeredUser;
+};
+
+
 const addUserToGroup = async (joinRequest) => {
   try {
-    const { groupId, user } = joinRequest;
+    const { groupId, newGroupUser } = joinRequest;
 
-    const updatedGroup = await Group.findOneAndUpdate({ _id: groupId, public: true, 'members.email': { $ne: user.email } }, { $push: { members: user } });
+    const updatedGroup = await Group.findOneAndUpdate({ _id: groupId, public: true, 'members.email': { $ne: newGroupUser.email } }, { $push: { members: newGroupUser } });
 
     if (updatedGroup) {
       const { name, description, savingsAmount } = updatedGroup;
@@ -29,7 +57,7 @@ const addUserToGroup = async (joinRequest) => {
         name,
         description,
         savingsAmount,
-        latestMember: { email: user.email, name: user.name },
+        latestMember: { email: newGroupUser.email, name: newGroupUser.name },
       };
       return groupInfo;
     }
@@ -38,6 +66,30 @@ const addUserToGroup = async (joinRequest) => {
     throw createError(400, error);
   }
 };
+
+
+const expireInvitation = async (invitation) => {
+  const invitationToExpire = invitation;
+  invitationToExpire.invitationToken = undefined;
+  invitationToExpire.invitationTokenExpires = undefined;
+  invitationToExpire.status = 'Accepted';
+  await invitationToExpire.save();
+};
+
+
+const addUserToPrivateGroup = async (invitation) => {
+  const registeredUser = await checkIfReceiverIsRegistered(invitation.receiver);
+  if (registeredUser == null) {
+    const hostURL = config.get('hostURL');
+    const link = `${hostURL}/group/signup/${invitation.invitationToken}`;
+    return `You are not yet a registered user on this platform. Do use the following link to register: ${link}`
+  }
+  const { groupId } = invitation;
+  const groupInfo = await addUserToGroup({ groupId, newGroupUser: registeredUser });
+  await expireInvitation(invitation);
+  return groupInfo;
+};
+
 
 const searchGroups = async (searchString) => {
   const searchResult = await Group.find({
@@ -95,5 +147,11 @@ const createInvitations = async (invitees, groupId) => {
 
 
 export default {
-  createGroup, getGroups, addUserToGroup, searchGroups, createInvitations,
+  createGroup,
+  getGroups,
+  addUserToGroup,
+  searchGroups,
+  createInvitations,
+  addUserToPrivateGroup,
+  checkInvitationValidity,
 };
