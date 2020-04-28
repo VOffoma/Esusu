@@ -2,10 +2,8 @@ import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
 import authService from './authService';
 
-// import authService from './authService';
-
-
 const authRouter = Router();
+
 
 authRouter.post('/signup', asyncHandler(async (req, res) => {
   const signUpInfo = req.body;

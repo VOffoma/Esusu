@@ -30,7 +30,15 @@ const groupInvitation = {
     invitees: Joi.array().min(1).required().items(Joi.string().email({ tlds: { allow: false } })),
   }),
 };
+
+const invitationToken = {
+  params: Joi.object({
+    token: Joi.string().trim().required(),
+  }),
+};
+
+
 // change groupcreation to a better name
 export default {
-  groupCreation, groupId, searchTerm, groupInvitation,
+  groupCreation, groupId, searchTerm, groupInvitation, invitationToken,
 };
