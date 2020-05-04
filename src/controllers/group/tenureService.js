@@ -1,3 +1,4 @@
+import createError from 'http-errors';
 import moment from 'moment';
 import Tenure from './models/Tenure';
 import Group from './models/Group';
@@ -53,14 +54,29 @@ const generateDistributionTable = async (tenureInfo) => {
   return shuffledMembers;
 };
 
+const checkForOngoingTenure = async (groupId) => {
+  const ongoingTenure = await Tenure.findOne({ groupId, status: 'On-going' });
+  return !!ongoingTenure;
+};
+
 const startTenure = async (tenureInfo) => {
   const tenure = tenureInfo;
+  const ongoingTenure = checkForOngoingTenure(tenure.groupId);
+  if (!ongoingTenure) {
+    throw createError(400, 'You can not start a savings tenure when the existing tenure is not over');
+  }
   tenure.distributionTable = await generateDistributionTable(tenureInfo);
   const newTenure = await (new Tenure(tenureInfo)).save();
   return newTenure;
 };
 
+const addNewMemberToOngoingTenure = async (groupId, newMember) => {
+  const ongoingTenure = checkForOngoingTenure(groupId);
+  if (ongoingTenure) {
+    await Tenure.findOneAndUpdate({ groupId }, { $push: { distributionTable: newMember } });
+  }
+};
 
 export default {
-  startTenure, checkIfPaymentIsDue,
+  startTenure, checkIfPaymentIsDue, addNewMemberToOngoingTenure,
 };

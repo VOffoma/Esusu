@@ -103,7 +103,7 @@ groupRouter.post('/:groupId/tenure',
   asyncHandler(async (req, res) => {
     const { groupId } = req.params;
     const { cadance } = req.body;
-    const groupInfo = await tenureService.startTenure({ groupId, cadance});
+    const groupInfo = await tenureService.startTenure({ groupId, cadance });
     return res.status(200).send(groupInfo);
   }));
 

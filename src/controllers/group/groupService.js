@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import config from '../../config/index';
 import Group from './models/Group';
 import Invitation from './models/Invitation';
+import tenureService from './tenureService';
 import { getUsers } from '../../services/aws';
 
 const createGroup = async (groupDetails) => {
@@ -50,6 +51,8 @@ const addUserToGroup = async (joinRequest) => {
     const { groupId, newGroupUser } = joinRequest;
 
     const updatedGroup = await Group.findOneAndUpdate({ _id: groupId, public: true, 'members.email': { $ne: newGroupUser.email } }, { $push: { members: newGroupUser } });
+    // if savings has started for this group, add new member to the bottom of distribution table
+    await tenureService.addNewMemberToOngoingTenure(groupId, newGroupUser);
 
     if (updatedGroup) {
       const { name, description, savingsAmount } = updatedGroup;
