@@ -2,6 +2,7 @@ import { Router } from 'express';
 import asyncHandler from 'express-async-handler';
 import { validate } from 'express-validation';
 import groupService from './groupService';
+import tenureService from './tenureService';
 import validationRules from './validationRules';
 import authService from '../auth/authService';
 import agenda from '../../jobs/agenda';
@@ -11,6 +12,7 @@ const groupRouter = Router();
 
 groupRouter.get('/', asyncHandler(async (req, res) => {
   const groups = await groupService.getGroups();
+  agenda.schedule('in 1 minute', 'test');
   res.status(200).send(groups);
 }));
 
@@ -94,6 +96,15 @@ groupRouter.post('/:groupId/join',
     const { groupId } = req.params;
     const { user } = req;
     const groupInfo = await groupService.addUserToGroup({ groupId, newGroupUser: user });
+    return res.status(200).send(groupInfo);
+  }));
+
+groupRouter.post('/:groupId/tenure',
+  validate(validationRules.groupId, { statusCode: 422, keyByField: true }, {}),
+  asyncHandler(async (req, res) => {
+    const { groupId } = req.params;
+    const { cadance } = req.body;
+    const groupInfo = await tenureService.startTenure({ groupId, cadance });
     return res.status(200).send(groupInfo);
   }));
 
