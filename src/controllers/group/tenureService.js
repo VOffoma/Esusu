@@ -64,8 +64,8 @@ const checkForOngoingTenure = async (groupId) => {
 
 const startTenure = async (tenureInfo) => {
   const tenure = tenureInfo;
-  const ongoingTenure = checkForOngoingTenure(tenure.groupId);
-  if (!ongoingTenure) {
+  const ongoingTenure = await checkForOngoingTenure(tenure.groupId);
+  if (ongoingTenure) {
     throw createError(400, 'You can not start a savings tenure when the existing tenure is not over');
   }
   tenure.distributionTable = await generateDistributionTable(tenureInfo);
