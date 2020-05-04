@@ -49,6 +49,9 @@ const generateDistributionTable = async (tenureInfo) => {
   const { groupId } = tenureInfo;
   const group = await Group.findById(groupId, 'members', { lean: true });
   const groupMembers = group.members;
+  if (groupMembers.length <= 1) {
+    throw createError(400, 'You need more than one menber in a group to start saving');
+  }
   const shuffledMembers = shuffleMembers(groupMembers);
   // const distributionTable = [];
   return shuffledMembers;
