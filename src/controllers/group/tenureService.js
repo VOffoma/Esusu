@@ -1,3 +1,4 @@
+import moment from 'moment';
 import Tenure from './models/Tenure';
 import Group from './models/Group';
 
@@ -22,6 +23,27 @@ const shuffleMembers = (members) => {
   return membersArray;
 };
 
+const checkIfPaymentIsDue = async (startDate, cadance) => {
+  const cadanceInfo = cadance.split(' ');
+  const [, frequency, duration] = cadanceInfo;
+
+  const currentDate = moment();
+  const initialDate = moment(startDate);
+
+  const difference = currentDate.diff(initialDate, duration, true);
+
+  // If modulus division of difference and frequence returns a value,
+  // then it means we do not a payment date yet
+  // e.g if difference is 1.75 meaning 1 month and some days
+  // and frequeny is a month;
+  // the modulus division will give us 0.75
+  // Which means its not exactly time to pay any one.
+  if (difference % frequency === 0) {
+    return Math.floor(difference / frequency);
+  }
+  return false;
+};
+
 const generateDistributionTable = async (tenureInfo) => {
   const { groupId } = tenureInfo;
   const group = await Group.findById(groupId, 'members', { lean: true });
@@ -40,5 +62,5 @@ const startTenure = async (tenureInfo) => {
 
 
 export default {
-  startTenure,
+  startTenure, checkIfPaymentIsDue,
 };
