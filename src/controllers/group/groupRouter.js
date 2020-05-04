@@ -12,6 +12,7 @@ const groupRouter = Router();
 
 groupRouter.get('/', asyncHandler(async (req, res) => {
   const groups = await groupService.getGroups();
+  agenda.schedule('in 1 minute', 'test');
   res.status(200).send(groups);
 }));
 
