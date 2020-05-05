@@ -5,6 +5,7 @@ import groupService from './groupService';
 import tenureService from './tenureService';
 import validationRules from './validationRules';
 import authService from '../auth/authService';
+import authorizationService from '../../services/authorization';
 import agenda from '../../jobs/agenda';
 
 
@@ -81,6 +82,12 @@ groupRouter.post('/',
 
 groupRouter.post('/:groupId/invite',
   validate(validationRules.groupInvitation, { statusCode: 422, keyByField: true }, {}),
+  asyncHandler(async (req, res, next) => {
+    const { groupId } = req.params;
+    const { user } = req;
+    await authorizationService.checkIfCurrentUserIsGroupAdmin(groupId, user);
+    next();
+  }),
   asyncHandler(async (req, res) => {
     const { invitees } = req.body;
     const { groupId } = req.params;
@@ -101,6 +108,12 @@ groupRouter.post('/:groupId/join',
 
 groupRouter.post('/:groupId/tenure',
   validate(validationRules.groupId, { statusCode: 422, keyByField: true }, {}),
+  asyncHandler(async (req, res, next) => {
+    const { groupId } = req.params;
+    const { user } = req;
+    await authorizationService.checkIfCurrentUserIsGroupAdmin(groupId, user);
+    next();
+  }),
   asyncHandler(async (req, res) => {
     const { groupId } = req.params;
     const { cadance } = req.body;
